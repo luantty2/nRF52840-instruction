@@ -83,9 +83,24 @@ void dance_layer_SETTINGS(qk_tap_dance_state_t *state, void *user_data) {
         layer_on(_SETTINGS);
         reset_tap_dance (state);
     }
+    else
+    {
+    	register_code (KC_ESC);
+    }
+}
+void dance_layer_SETTINGS_RESET(qk_tap_dance_state_t *state, void *user_data) {
+    if (state->count == 3) {  // TAP THREE TIMES TO ENTER SETTINGS
+        // layer_on(_SETTINGS);
+        // reset_tap_dance (state);
+    }
+    else
+    {
+    	unregister_code (KC_ESC);
+    }
 }
 
-qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN(dance_layer_SETTINGS)};
+// qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN(dance_layer_SETTINGS)};
+qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,dance_layer_SETTINGS,dance_layer_SETTINGS_RESET)};
 
 // define keymaps
 const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -153,8 +168,7 @@ static bool process_record_user_special(uint16_t keycode, bool pressed) {
     // workaround:
     // get_ble_enabled() macro(in app_ble_func.h) is incorrect.
     if (pressed) {
-      bool ble = get_ble_enabled();
-      
+      bool ble = get_ble_enabled(); 
       set_ble_enabled(!ble);
       set_usb_enabled(ble);
     }
