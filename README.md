@@ -472,6 +472,8 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 
 ```
 
+问题是，编码器目前无论如何都无法输出媒体键键值，例如VOLU，VOLD，而在一般的键位上设置这些键值却有作用，也许是老版本QMK内核的问题。我从新版本移植了类似“tap_code()”等功能，又或者是设置延迟，但依然无解。
+
 ---
 
 ### OLED显示屏配置
