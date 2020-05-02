@@ -50,40 +50,8 @@ static uint8_t thisHand, thatHand;
 static int8_t encoder_value[NUMBER_OF_ENCODERS] = {0};
 #endif
 
-// void tap_code(uint8_t code) {
-//     register_code(code);
-//     // if (code == KC_CAPS) {
-//     //     wait_ms(TAP_HOLD_CAPS_DELAY);
-//     // } else {
-//         wait_ms(10);
-//     // }
-//     unregister_code(code);
-// }
-
 __attribute__((weak)) void encoder_update_user(int8_t index, bool clockwise) 
-{ 
-    // if(index==0)
-    // {
-    // if(clockwise){
-    //         // send_string("+");
-    //     register_code(KC_A);
-    //     //// wait_ms(20);
-    //     nrf_delay_ms(10);
-    //     unregister_code(KC_A);
-    //     // send_string(_tap(KC_A));
-
-    //     // tap_code(KC_VOLU);
-    //     }
-    //     else{
-    //         // send_string("=");
-    //         // tap_code(KC_B);
-    //         register_code(KC_B);
-    //         // wait_ms(50);
-    //         nrf_delay_ms(10);
-    //         unregister_code(KC_B);
-    //     }
-    // }
-    
+{   
 }
 
 __attribute__((weak)) void encoder_update_kb(int8_t index, bool clockwise) { encoder_update_user(index, clockwise); }
