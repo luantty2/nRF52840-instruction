@@ -59,7 +59,7 @@ enum custom_keycodes {
     RGBRST
 };
 
-enum { TO_SETTINGS = 0};
+enum { TO_SETTINGS=0 };
 
 extern keymap_config_t keymap_config;
 
@@ -67,60 +67,73 @@ enum layer_number {
     _BASE = 0,
     _EXTRA,
     _SETTINGS,
-    _LAYERSIZE,
+    _SYSTEM_SETTINGS,
+    _BLE_SETTINGS,
+    _RGB_SETTINGS,
 };
 
 // Fillers to make layering more clear
 #define _______ KC_TRNS
 #define XXXXXXX KC_NO
 
-#define CTL_TAB CTL_T(KC_TAB)
-#define SFT_ESC LSFT_T(KC_ESC)
-#define SFT_SPC RSFT_T(KC_SPC)
-
-void dance_layer_SETTINGS(qk_tap_dance_state_t *state, void *user_data) {
+void dance_layer_TO_SETTINGS(qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 3) {  // TAP THREE TIMES TO ENTER SETTINGS
         layer_on(_SETTINGS);
         reset_tap_dance (state);
     }
     else
     {
-    	register_code (KC_ESC);
+    	register_code (KC_GRV);
     }
 }
-void dance_layer_SETTINGS_RESET(qk_tap_dance_state_t *state, void *user_data) {
+void dance_layer_TO_SETTINGS_RESET(qk_tap_dance_state_t *state, void *user_data) {
     if (state->count == 3) {  // TAP THREE TIMES TO ENTER SETTINGS
-        // layer_on(_SETTINGS);
-        // reset_tap_dance (state);
     }
     else
     {
-    	unregister_code (KC_ESC);
+    	unregister_code (KC_GRV);
     }
 }
 
-// qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN(dance_layer_SETTINGS)};
-qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,dance_layer_SETTINGS,dance_layer_SETTINGS_RESET)};
+qk_tap_dance_action_t tap_dance_actions[] = {[TO_SETTINGS] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,dance_layer_TO_SETTINGS,dance_layer_TO_SETTINGS_RESET)};
 
 // define keymaps
 const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE]=LAYOUT(
-    TD(TO_SETTINGS), KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, 
+    KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, 
     KC_CAPS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_ENT, KC_MUTE, 
-    LSFT_T(KC_TAB), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, ENT_DFU, KC_UP, 
+    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_UP, 
     MO(_EXTRA), KC_LGUI, KC_SPC, KC_LEFT, KC_DOWN, KC_RGHT),
 
     [_EXTRA]=LAYOUT(
-    KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS, 
-    KC_LCTL, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LBRC, KC_RBRC, KC_SCLN, KC_QUOT, XXXXXXX, XXXXXXX, 
-    KC_LSFT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_SLSH, KC_VOLU, 
-    _______, _______, XXXXXXX, KC_MINS, KC_VOLD, KC_EQL),
+    TD(TO_SETTINGS), KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSLS, 
+    KC_TAB, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LBRC, KC_RBRC, KC_SCLN, KC_QUOT, XXXXXXX, XXXXXXX, 
+    _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_SLSH, KC_VOLU, 
+    _______, KC_LCTL, KC_LALT, KC_MINS, KC_VOLD, KC_EQL),
 
     [_SETTINGS]=LAYOUT(
-    TO(_BASE), XXXXXXX, XXXXXXX, RGBRST, RGB_TOG, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DELBNDS, 
-    XXXXXXX, XXXXXXX, ENT_SLP, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ENT_DFU, XXXXXXX, RGB_MOD, XXXXXXX, XXXXXXX, XXXXXXX, 
+    TO(_BASE), XXXXXXX, XXXXXXX, XXXXXXX, TO(_RGB_SETTINGS), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, TO(_SYSTEM_SETTINGS), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TO(_BLE_SETTINGS), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
+
+    [_SYSTEM_SETTINGS]=LAYOUT(
+    TO(_BASE), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ENT_SLP, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ENT_DFU, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
+
+    [_BLE_SETTINGS]=LAYOUT(
+    TO(_BASE), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DELBNDS, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
+
+    [_RGB_SETTINGS]=LAYOUT(
+    TO(_BASE), XXXXXXX, XXXXXXX, RGBRST, XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RGB_MOD, XXXXXXX, XXXXXXX, RGB_VAI, 
+    XXXXXXX, XXXXXXX, XXXXXXX, RGB_SAD, RGB_VAD, RGB_SAI)
 };
 
 #ifndef TAPPING_TERM_PER_KEY
@@ -217,13 +230,22 @@ static bool process_record_user_special(uint16_t keycode, bool pressed) {
 }
 
 char bat_state_str[24];
+char bat_percentage_str[24];
 void set_bat_state(void) {
-  snprintf(bat_state_str, sizeof(bat_state_str), "&': %4d",
+  snprintf(bat_state_str, sizeof(bat_state_str), "VOLT: %4d MV",
            get_vcc());
+  snprintf(bat_percentage_str, sizeof(bat_percentage_str), "&': %d %%",
+           (get_vcc()-2400)/18);
 }
+
 const char *read_bat_state(void) {
   return bat_state_str;
 }
+
+const char *read_bat_percentage(void) {
+  return bat_percentage_str;
+}
+
 char hid_state_str[24];
 const char *read_hid_state(void) {
 #if defined IS_LEFT_HAND  &&  IS_LEFT_HAND == true
@@ -234,13 +256,35 @@ const char *read_hid_state(void) {
   return hid_state_str;
 }
 
-char wpm_str[10];
+char wpm_str[24];
 void set_wpm(void) {
     snprintf(wpm_str, sizeof(wpm_str), "*+: %d", get_current_wpm());
 }
 const char *read_wpm(void) {
   return wpm_str;
 }
+
+#ifdef RGBLIGHT_ENABLE
+char rgb_state_str[24];
+const char *read_rgb_state(void)
+{
+    snprintf(rgb_state_str, sizeof(rgb_state_str), "LIGHT %s MODE: %d",
+    rgblight_config.enable ? "ON " : "OFF", rgblight_config.mode);
+    return rgb_state_str;
+}
+#endif
+
+
+/*
+char caps_lock_state[24];
+const char *read_caps_lock_state(void)
+{
+  uint8_t leds = host_keyboard_leds();
+  snprintf(caps_lock_state, sizeof(caps_lock_state), "CL:%s",
+           (leds & (1 << USB_LED_CAPS_LOCK)) ? "1" : "0");
+  return caps_lock_state;
+}
+*/
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -260,7 +304,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   if (record->event.pressed) {
     set_bat_state();
-    set_keylog(keycode, record);
+    // set_keylog(keycode, record);
     update_wpm(keycode);
     set_wpm();
   }
@@ -290,8 +334,9 @@ void matrix_render_user(struct CharacterMatrix *matrix) {
       case _BASE:
         // matrix_write_ln(matrix, read_layer_state());
         matrix_write_ln(matrix, read_hid_state());
-        matrix_write_ln(matrix, read_bat_state());
+        matrix_write_ln(matrix, read_bat_percentage());
         matrix_write_ln(matrix, read_wpm());
+        // matrix_write(matrix,read_caps_lock_state());
         
     // matrix_write_ln(matrix, read_keylog());
     // matrix_write_ln(matrix, read_keylogs());
@@ -300,13 +345,38 @@ void matrix_render_user(struct CharacterMatrix *matrix) {
     //matrix_write_ln(matrix, read_timelog());
       break;
       case _EXTRA:
-        // matrix_write(matrix, read_wpm());
-        matrix_write_ln(matrix, "EXTRA");
+        matrix_write_ln(matrix, "./");
+        matrix_write_ln(matrix, read_bat_state());
       break;
       case _SETTINGS:
-        matrix_write_ln(matrix, "SETTINGS");
+        matrix_write_ln(matrix, ",-");
+        matrix_write_ln(matrix, "S: SYSTEM");
+        matrix_write_ln(matrix, "B: BLUETOOTH");
+        matrix_write(matrix, "R: RGB LIGHT");
+        break;
+      case _SYSTEM_SETTINGS:
+        matrix_write_ln(matrix, ",- =>");
+        matrix_write_ln(matrix, "P: SLEEP");
+        matrix_write_ln(matrix, "B: ENTER BOOT");
+      break;
+      case _BLE_SETTINGS:
+        matrix_write_ln(matrix, ",- #$");
+        matrix_write_ln(matrix, "T: TOGGLE HID");
+        matrix_write_ln(matrix, "DEL: DEL BONDS");
+      break;
+      case _RGB_SETTINGS:
+      #ifdef RGBLIGHT_ENABLE
+        matrix_write_ln(matrix, ",- ;<");
+        matrix_write_ln(matrix, read_rgb_state());
+        matrix_write_ln(matrix, "T: TOGGLE E: RESET ");
+        matrix_write(matrix, "M: MODE HUE:ENCODER");
+      #else
+        matrix_write_ln(matrix, ",- ;<");
+        matrix_write_ln(matrix, "RGB NOT SUPPORTED");
+      #endif
       break;
       default:
+      matrix_write_ln(matrix, "ERROR LAYER");
       break;
     }
 }
@@ -320,13 +390,41 @@ void iota_gfx_task_user(void) {
 
 #endif
 
+//Media keys not working, don't know why
 #ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
+  switch(biton32(layer_state))
+  {
+    case _BASE:
       if(clockwise){
         tap_code(KC_SLCK);
       }
       else{
         tap_code(KC_PAUS);
       }
+      break;
+    case _EXTRA:
+      if(clockwise){
+        tap_code(KC_PGUP);
+      }
+      else{
+        tap_code(KC_PGDN);
+      }
+      break;
+    case _SETTINGS:
+    case _SYSTEM_SETTINGS:
+    case _BLE_SETTINGS:
+    break;
+    case _RGB_SETTINGS:
+      if(clockwise){
+        rgblight_increase_hue();
+      }
+      else{
+        rgblight_decrease_hue();
+      }
+      break;
+    default:
+    break;
+  }
 }
 #endif

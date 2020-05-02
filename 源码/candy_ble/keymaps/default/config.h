@@ -1,2 +1,0 @@
-#define TAPPING_TERM 125
-#define SSD1306OLED

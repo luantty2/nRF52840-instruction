@@ -64,7 +64,7 @@ void matrix_init_user() {
   // turn on RGB leds by default, debug option *remove me*
   // mode change doesnt work until you press bl reset (adjust+lrst)
   eeconfig_update_rgblight_default();
-  rgblight_enable();
+  // rgblight_enable();
 #endif
   //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
 #ifdef SSD1306OLED
