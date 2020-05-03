@@ -234,6 +234,14 @@ nrf SDK下载地址： https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.
 
 在环境安装完成后可以通过能否编译键盘来看环境是否安装正常。固件编译命令：
 
+*测试：*
+
+```
+make NRFSDK15_ROOT=/Users/apple/Downloads/nrf_qmk_firmware/nRF5_SDK_15.0.0_a53641a ble_micro_test
+```
+
+*编译candy ble:*
+
 ```
 make NRFSDK15_ROOT=/Users/apple/Downloads/nrf_qmk_firmware/nRF5_SDK_15.0.0_a53641a candy_ble/pro_v1
 ```
