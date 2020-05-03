@@ -238,6 +238,8 @@ nrf SDK下载地址： https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.
 make NRFSDK15_ROOT=/Users/apple/Downloads/nrf_qmk_firmware/nRF5_SDK_15.0.0_a53641a candy_ble/pro_v1
 ```
 
+*candy_ble中的编码器代码中有两行tap_code()函数会导致编译错误，是因为我在自己的fork中从QMK近期版本合并了tap_code()的实现，而sekigon的版本中没有该实现，你需要把tap_code()注释掉才能编译。*
+
 编译命令的结构：make nrf_SDK所在文件夹 键盘名/（master/slave/solo）
 
 编译命令和原版的QMK还是不一样的，首先它需要填写nrf SDK所在的文件夹。其次，根据键盘是无线分体（master、slave）还是单体，有不同的文件夹命名，此处以candy 40为例，单体键盘文件放在pro_v1文件夹下，因此是candy_ble/pro_v1。
