@@ -56,7 +56,8 @@ enum custom_keycodes {
     ENT_DFU,              /* Start bootloader                     */
     ENT_SLP,              /* Deep sleep mode                      */
 
-    RGBRST
+    RGBRST,
+    CST_MVP
 };
 
 enum { TO_SETTINGS=0 };
@@ -124,8 +125,8 @@ const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
 
     [_BLE_SETTINGS]=LAYOUT(
-    TO(_BASE), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DELBNDS, 
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    TO(_BASE), ADV_ID1, ADV_ID2, XXXXXXX, XXXXXXX, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ADV_ID0, DELBNDS, 
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, AD_WO_L, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
 
@@ -219,6 +220,9 @@ static bool process_record_user_special(uint16_t keycode, bool pressed) {
     break;
   case ENT_SLP:
     if (!pressed)
+    // #ifdef SSD1306OLED
+    //   iota_gfx_off();
+    // #endif
       sleep_mode_enter();
     break;
 
@@ -301,6 +305,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       #endif
       break;
+    case CST_MVP:
+      if (record->event.pressed) {
+         SEND_STRING("QMK is the best thing ever!");
+      }
+      else{
+      }
+      break;
   }
   if (record->event.pressed) {
     set_bat_state();
@@ -308,13 +319,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     update_wpm(keycode);
     set_wpm();
   }
-  
   switch (keycode) {
   default:
     // unset_layer(record);
     return process_record_user_special(keycode, record->event.pressed);
   }
-
   return false;
 }
 
@@ -397,18 +406,22 @@ void encoder_update_user(uint8_t index, bool clockwise) {
   {
     case _BASE:
       if(clockwise){
-        tap_code(KC_SLCK);
+        register_code(KC_SLCK);
+        unregister_code(KC_SLCK);
       }
       else{
-        tap_code(KC_PAUS);
+        register_code(KC_PAUS);
+        unregister_code(KC_PAUS);
       }
       break;
     case _EXTRA:
       if(clockwise){
-        tap_code(KC_PGUP);
+        register_code(KC_PGUP);
+        unregister_code(KC_PGUP);
       }
       else{
-        tap_code(KC_PGDN);
+        register_code(KC_PGDN);
+        unregister_code(KC_PGDN);
       }
       break;
     case _SETTINGS:
