@@ -191,9 +191,9 @@ Target Interface -> Auto selection
 
 ### 烧录Bootloader
 
-打开刚才下载的另一个软件 JFlashLite，此处需要先准备bootloader，bootloader的下载地址：
+打开刚才下载的另一个软件 JFlashLite，此处需要先准备bootloader：
 
-https://github-production-release-asset-2e65be.s3.amazonaws.com/118896384/c1f94780-6e96-11e9-8576-e3e69ae616e6?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200430%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200430T060937Z&X-Amz-Expires=300&X-Amz-Signature=ef0904eede185d90906d6d72b0957c858f28d0e054bc4d00cd4ff1ca9ede8101&X-Amz-SignedHeaders=host&actor_id=13130028&repo_id=118896384&response-content-disposition=attachment%3B%20filename%3Dpca10056_bootloader-0.2.11_s140_6.1.1.hex&response-content-type=application%2Foctet-stream
+[pca10056_bootloader-0.2.10_s140_6.1.1.hex](https://github.com/joric/nrfmicro/wiki/Software#Bootloader)
 
 然后在JFlashLite中载入下载好的bootloader，然后Program Device, 一秒之后bootloader就烧录好了。
 
