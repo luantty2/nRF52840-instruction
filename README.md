@@ -10,6 +10,7 @@
 * 硬件
     * nrfmicro
     * 引脚说明
+    * 电源管理
     * 焊接
     * PCB
         * 布线规则
@@ -142,6 +143,15 @@ nrfmicro系统引脚定义：
 在引出所有引脚后，大概可以画成这样：
 
 ![PHOTO](https://i.imgur.com/FQHWLr6.png)
+
+### 电源管理
+
+MCP73831电池管理芯片上的Rprog电阻阻值决定充电电流的大小，最好匹配充电电流和电池容量。要确定自己的电池容量应该在多大的电流下充电，可以参考电池厂商给出的数据。
+
+*MCP73831 datasheet*
+
+![PHOTO](https://i.imgur.com/0kDFwOw.png)
+
 
 ### 焊接
 
