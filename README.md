@@ -48,7 +48,8 @@ nRF52832和nRF52810（TMK固件）：https://github.com/Lotlab/nrf52-keyboard
 注意在这里使用的QMK固件并非官方发布的版本，并且因为与Nordic具有双重协议的问题，不可能会被合并进QMK主分支，因此想要使用n52840以及QMK固件的话，可能会经历固件不稳定或者存在BUG的情况，如果希望固件稳定运行，可以使用官方所支持的蓝牙4.0（nRF51822）。
 
 BUG列表：
-* RGB仅在USB模式下工作，切换到蓝牙模式下会使RGB灯效卡住并无法关闭，重新插入USB线后恢复正常
+
+* ~~RGB仅在USB模式下工作，切换到蓝牙模式下会使RGB灯效卡住并无法关闭，重新插入USB线后恢复正常~~ RGB BUG已修复。[解决方法](https://github.com/sekigon-gonnoc/qmk_firmware/issues/28)
 
 ---
 
