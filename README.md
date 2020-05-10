@@ -52,6 +52,10 @@ BUG列表：
 
 * ~~RGB仅在USB模式下工作，切换到蓝牙模式下会使RGB灯效卡住并无法关闭，重新插入USB线后恢复正常~~ RGB BUG已修复。[解决方法](https://github.com/sekigon-gonnoc/qmk_firmware/issues/28)
 
+* Sekigon的分支中有EEPROM问题，RGB在每次键盘电源关闭后无法读取前一次的RGB亮度、饱和度、开关状态等，如果使用Sekigon的分支来做RGB的话则一定会遇到EEPROM不起作用的问题吧。不过，最近这个问题也解决了，但是改动了相当多的内核部分的文件，如果想要使用EEPROM正常工作的话可以克隆我的分支：https://github.com/luantty2/qmk
+
+  要注意的是这个指南仓库下的candy ble源码并不支持EEPROM。但是 https://github.com/luantty2/qmk 下的candy ble源码已经支持EEPROM。因为后者无法在Sekigon的分支下正常编译，所以我将他它们区分了，如果你不需要EEPROM，那么在Sekigon的分支下工作自然没问题。
+
 ---
 
 ## 硬件
