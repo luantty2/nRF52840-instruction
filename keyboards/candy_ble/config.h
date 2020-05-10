@@ -18,9 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define ENABLE_STARTUP_ADV_NOLIST
+
 /* USB Device descriptor parameter */
-#define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0x2090
+#define VENDOR_ID       0x3D92
+#define PRODUCT_ID      0x8A42
 #define DEVICE_VER      0x0001
 /* in python2: list(u"whatever".encode('utf-16-le')) */
 /*   at most 32 characters or the ugly hack in usb_main.c borks */
@@ -28,9 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT Candy BLE
 #define DESCRIPTION QMK based keyboard
 
-#define BLE_NUS_MIN_INTERVAL 30
-#define BLE_NUS_MAX_INTERVAL 30
-#define BLE_HID_MAX_INTERVAL 50
+#define BLE_NUS_MIN_INTERVAL 50
+#define BLE_NUS_MAX_INTERVAL 60
+#define BLE_HID_MAX_INTERVAL 80
 #define BLE_HID_SLAVE_LATENCY 3
 
 /* key matrix size */
@@ -56,10 +58,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 )
 #define ENCODER_ENABLE
 
+// #define WPM_ENABLE
+
 #define PROGMEM // arm-gcc does not interpret PROGMEM
 #define RGB_DI_PIN PIN15 // The pin the LED strip is connected to
 
-#define RGBLED_NUM (12+3)// undershoots 3 leds, bad timings probably
+#define RGBLED_NUM 12// undershoots 3 leds, bad timings probably
+
+#define PREVENT_STUCK_MODIFIERS
 
 // #undef RGB_DISABLE_WHEN_USB_SUSPENDED
 // #define RGBLIGHT_SPLIT

@@ -2,6 +2,7 @@
 #include "nrf_gpio.h"
 #include "nrf_delay.h"
 #include "nrf_power.h"
+#include "nrfx_power.h"
 #include "nrf.h"
 #include "app_ble_func.h"
 
@@ -56,6 +57,25 @@ void check_ble_switch(bool init) {
 	}
 }
 
+//switch to usb mode when usb cable connected
+void check_usb_power()
+{
+	if (nrfx_power_usbstatus_get() == NRFX_POWER_USB_STATE_CONNECTED ||
+    	nrfx_power_usbstatus_get() == NRFX_POWER_USB_STATE_READY) {
+		if(!get_usb_enabled() && get_ble_enabled())
+		{
+    		set_usb_enabled(true);
+			set_ble_enabled(false);
+		}
+  	} else {
+  		if(get_usb_enabled() && !get_ble_enabled())
+		{
+    		set_usb_enabled(false);
+			set_ble_enabled(true);
+		}
+  	}
+}
+
 void nrfmicro_init() {
   // configure pins
   // nrf_gpio_cfg_output(POWER_PIN);
@@ -66,9 +86,14 @@ void nrfmicro_init() {
 
   // nrfmicro_power_enable(false);
   check_ble_switch(true);
+
+  // eeconfig_update_rgblight_default();
+  // rgblight_enable();
 }
 
+
 void nrfmicro_update() {
-  check_ble_switch(false);
+  // check_ble_switch(false);
+  check_usb_power();
 }
 

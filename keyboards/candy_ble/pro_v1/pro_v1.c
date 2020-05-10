@@ -23,7 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef ENCODER_ENABLE
   #include "encoder.h"
 #endif
-#include "wpm.h"
+#ifdef WPM_ENABLE
+  #include "wpm.h"
+#endif
 #ifdef SSD1306OLED
   #include "ssd1306.h"
 #endif
@@ -63,7 +65,7 @@ void matrix_init_user() {
 #ifdef RGBLIGHT_ENABLE
   // turn on RGB leds by default, debug option *remove me*
   // mode change doesnt work until you press bl reset (adjust+lrst)
-  eeconfig_update_rgblight_default();
+  // eeconfig_update_rgblight_default();
   // rgblight_enable();
 #endif
   //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
@@ -84,6 +86,8 @@ void matrix_scan_user(void) {
   #ifdef ENCODER_ENABLE
     encoder_read();
   #endif
-  decay_wpm();
+  #ifdef WPM_ENABLE
+    decay_wpm();
+  #endif
   nrfmicro_update();
 }

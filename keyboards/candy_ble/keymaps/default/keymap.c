@@ -18,14 +18,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 #include "app_ble_func.h"
+#include "nrf_gpio.h"
 #ifdef SSD1306OLED
   #include "ssd1306.h"
 #endif
-#include "wpm.h"
+#ifdef WPM_ENABLE
+  #include "wpm.h"
+#endif
 
 const uint8_t is_master = IS_LEFT_HAND;
 
-int RGB_current_mode;
+// int RGB_current_mode;
 #ifdef RGBLIGHT_ENABLE
 //Following line allows macro to read current RGB settings
 extern rgblight_config_t rgblight_config;
@@ -57,6 +60,7 @@ enum custom_keycodes {
     ENT_SLP,              /* Deep sleep mode                      */
 
     RGBRST,
+    RGBTOG,
     CST_MVP
 };
 
@@ -125,16 +129,16 @@ const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
 
     [_BLE_SETTINGS]=LAYOUT(
-    TO(_BASE), ADV_ID1, ADV_ID2, XXXXXXX, XXXXXXX, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, ADV_ID0, DELBNDS, 
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, AD_WO_L, XXXXXXX, 
+    TO(_BASE), ADV_ID0, ADV_ID1, ADV_ID2, ADV_ID3, TOG_HID, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, DELBNDS, 
+    XXXXXXX, DEL_ID0, DEL_ID1, DEL_ID2, DEL_ID3, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, AD_WO_L, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX),
 
     [_RGB_SETTINGS]=LAYOUT(
-    TO(_BASE), XXXXXXX, XXXXXXX, RGBRST, XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+    TO(_BASE), XXXXXXX, XXXXXXX, RGBRST, XXXXXXX, RGBTOG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RGB_MOD, XXXXXXX, XXXXXXX, RGB_VAI, 
-    XXXXXXX, XXXXXXX, XXXXXXX, RGB_SAD, RGB_VAD, RGB_SAI)
+    XXXXXXX, KC_LCTL, KC_LALT, RGB_SAD, RGB_VAD, RGB_SAI)
 };
 
 #ifndef TAPPING_TERM_PER_KEY
@@ -209,7 +213,6 @@ static bool process_record_user_special(uint16_t keycode, bool pressed) {
   case BATT_LV:
     if (pressed) {
       char str[16];
-
       sprintf(str, "%4dmV", get_vcc());
       send_string(str);
     }
@@ -236,10 +239,19 @@ static bool process_record_user_special(uint16_t keycode, bool pressed) {
 char bat_state_str[24];
 char bat_percentage_str[24];
 void set_bat_state(void) {
-  snprintf(bat_state_str, sizeof(bat_state_str), "VOLT: %4d MV",
+  uint8_t value = nrf_gpio_pin_read(SWITCH_PIN);
+
+  if(value)
+  {
+    snprintf(bat_state_str, sizeof(bat_state_str), "VOLT: %4d MV",
            get_vcc());
-  snprintf(bat_percentage_str, sizeof(bat_percentage_str), "&': %d %%",
+    snprintf(bat_percentage_str, sizeof(bat_percentage_str), "&': %d %%",
            (get_vcc()-2400)/18);
+  } else {
+    snprintf(bat_state_str, sizeof(bat_state_str), "VOLT: CHECK SWITCH");
+    snprintf(bat_percentage_str, sizeof(bat_percentage_str), "&': CHECK SWITCH");
+  }
+
 }
 
 const char *read_bat_state(void) {
@@ -260,6 +272,7 @@ const char *read_hid_state(void) {
   return hid_state_str;
 }
 
+#ifdef WPM_ENABLE
 char wpm_str[24];
 void set_wpm(void) {
     snprintf(wpm_str, sizeof(wpm_str), "*+: %d", get_current_wpm());
@@ -267,6 +280,7 @@ void set_wpm(void) {
 const char *read_wpm(void) {
   return wpm_str;
 }
+#endif
 
 #ifdef RGBLIGHT_ENABLE
 char rgb_state_str[24];
@@ -277,6 +291,31 @@ const char *read_rgb_state(void)
     return rgb_state_str;
 }
 #endif
+
+char mod_shift_win_str[24];
+const char *read_shift_win_state(void)
+{
+      snprintf(mod_shift_win_str, sizeof(mod_shift_win_str), "%s %s",
+        get_mods() & MOD_BIT(KC_LSHIFT)? "]^" : "  ",
+        get_mods() & MOD_BIT(KC_LGUI)? "\\" : " " );
+    return mod_shift_win_str; 
+}
+
+char mod_ctrl_alt_str[24];
+const char *read_ctrl_alt_state(void)
+{
+      snprintf(mod_ctrl_alt_str, sizeof(mod_ctrl_alt_str), "%s %s",
+        get_mods() & MOD_BIT(KC_LCTL)? "_" : " ",
+        get_mods() & MOD_BIT(KC_LALT)? "{" : " " );
+    return mod_ctrl_alt_str; 
+}
+
+char version_str[24];
+const char *read_version(void)
+{
+      snprintf(version_str, sizeof(version_str), "VER 0510 NOEE");
+    return version_str; 
+}
 
 
 /*
@@ -297,7 +336,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case RGBRST:
       #ifdef RGBLIGHT_ENABLE
         if (record->event.pressed) {
-          nrfmicro_power_enable(true);
+          // nrfmicro_power_enable(true);
           eeconfig_update_rgblight_default();
           rgblight_enable();
           // RGB_current_mode = rgblight_config.mode;
@@ -305,19 +344,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
       #endif
       break;
-    case CST_MVP:
-      if (record->event.pressed) {
-         SEND_STRING("QMK is the best thing ever!");
-      }
-      else{
-      }
+    case RGBTOG:
+      #ifdef RGBLIGHT_ENABLE
+        if (record->event.pressed) {
+          if(!rgblight_config.enable) {
+            eeconfig_update_rgblight_default();
+            rgblight_enable();
+          }
+          else{
+            rgblight_disable();
+          }
+        }
+      #endif
       break;
   }
   if (record->event.pressed) {
     set_bat_state();
     // set_keylog(keycode, record);
-    update_wpm(keycode);
-    set_wpm();
+    #ifdef WPM_ENABLE
+      update_wpm(keycode);
+      set_wpm();
+    #endif
   }
   switch (keycode) {
   default:
@@ -344,43 +391,50 @@ void matrix_render_user(struct CharacterMatrix *matrix) {
         // matrix_write_ln(matrix, read_layer_state());
         matrix_write_ln(matrix, read_hid_state());
         matrix_write_ln(matrix, read_bat_percentage());
-        matrix_write_ln(matrix, read_wpm());
-        // matrix_write(matrix,read_caps_lock_state());
-        
-    // matrix_write_ln(matrix, read_keylog());
-    // matrix_write_ln(matrix, read_keylogs());
-    //matrix_write_ln(matrix, read_mode_icon(keymap_config.swap_lalt_lgui));
-    //matrix_write_ln(matrix, read_host_led_state());
-    //matrix_write_ln(matrix, read_timelog());
+        #ifdef WPM_ENABLE
+          matrix_write_ln(matrix, read_wpm());
+        #endif
+        matrix_write_ln(matrix,read_shift_win_state());
+        matrix_write(matrix,read_ctrl_alt_state());
+        //others:
+        // matrix_write(matrix,read_caps_lock_state());   
+        // matrix_write_ln(matrix, read_keylog());
+        // matrix_write_ln(matrix, read_keylogs());
+        //matrix_write_ln(matrix, read_mode_icon(keymap_config.swap_lalt_lgui));
+        //matrix_write_ln(matrix, read_host_led_state());
+        //matrix_write_ln(matrix, read_timelog());
       break;
       case _EXTRA:
         matrix_write_ln(matrix, "./");
         matrix_write_ln(matrix, read_bat_state());
+        matrix_write_ln(matrix,read_shift_win_state());
+        matrix_write(matrix,read_ctrl_alt_state());
       break;
       case _SETTINGS:
-        matrix_write_ln(matrix, ",-");
+        matrix_write_ln(matrix, ",-             [ESC");
         matrix_write_ln(matrix, "S: SYSTEM");
         matrix_write_ln(matrix, "B: BLUETOOTH");
         matrix_write(matrix, "R: RGB LIGHT");
         break;
       case _SYSTEM_SETTINGS:
-        matrix_write_ln(matrix, ",- =>");
-        matrix_write_ln(matrix, "P: SLEEP");
+        matrix_write_ln(matrix, ",- =>          [ESC");
+        // matrix_write_ln(matrix, "P: SLEEP");
         matrix_write_ln(matrix, "B: ENTER BOOT");
+        matrix_write_ln(matrix, read_version());
       break;
       case _BLE_SETTINGS:
-        matrix_write_ln(matrix, ",- #$");
+        matrix_write_ln(matrix, ",- #$          [ESC");
         matrix_write_ln(matrix, "T: TOGGLE HID");
         matrix_write_ln(matrix, "DEL: DEL BONDS");
       break;
       case _RGB_SETTINGS:
       #ifdef RGBLIGHT_ENABLE
-        matrix_write_ln(matrix, ",- ;<");
+        matrix_write_ln(matrix, ",- ;<          [ESC");
         matrix_write_ln(matrix, read_rgb_state());
         matrix_write_ln(matrix, "T: TOGGLE E: RESET ");
         matrix_write(matrix, "M: MODE HUE:ENCODER");
       #else
-        matrix_write_ln(matrix, ",- ;<");
+        matrix_write_ln(matrix, ",- ;<          [ESC");
         matrix_write_ln(matrix, "RGB NOT SUPPORTED");
       #endif
       break;
@@ -429,11 +483,24 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     case _BLE_SETTINGS:
     break;
     case _RGB_SETTINGS:
-      if(clockwise){
-        rgblight_increase_hue();
-      }
-      else{
-        rgblight_decrease_hue();
+      if (get_mods() & MOD_BIT(KC_LALT)) {
+        if(clockwise){
+          rgblight_decrease_val();
+        } else {
+          rgblight_increase_val();
+        }
+      } else if (get_mods() & MOD_BIT(KC_LCTL)){
+        if(clockwise){
+          rgblight_decrease_sat();
+        } else {
+          rgblight_increase_sat();
+        }
+      } else {
+        if(clockwise){
+          rgblight_decrease_hue();
+        } else {
+          rgblight_increase_hue();
+        }
       }
       break;
     default:
